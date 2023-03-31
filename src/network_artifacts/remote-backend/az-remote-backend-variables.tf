@@ -4,7 +4,7 @@
 # Organization name
 variable "org_name" {
   type = string
-  description = "anoa"
+  description = "ampe"
 }
 # Environment
 variable "environment" {

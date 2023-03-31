@@ -12,7 +12,7 @@ resource "random_string" "tf-name" {
 
 # Create a Resource Group for the Terraform State File
 resource "azurerm_resource_group" "state-rg" {
-  name = "${lower(var.org_name)}-tfstate-policy-rg"
+  name = "${lower(var.org_name)}-network-artifacts-rg"
   location = var.location
   
   lifecycle {
@@ -26,7 +26,7 @@ resource "azurerm_resource_group" "state-rg" {
 # Create a Storage Account for the Terraform State File
 resource "azurerm_storage_account" "state-sta" {
   depends_on = [azurerm_resource_group.state-rg]
-  name = "${lower(var.org_name)}tf${random_string.tf-name.result}"
+  name = "${lower(var.org_name)}tfpolicy${random_string.tf-name.result}"
   resource_group_name = azurerm_resource_group.state-rg.name
   location = azurerm_resource_group.state-rg.location
   account_kind = "StorageV2"
