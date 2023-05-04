@@ -12,8 +12,8 @@ AUTHOR/S: jspinella
 
 terraform {
   # It is recommended to use remote state instead of local
-  backend "azurerm" {    
-    key                  = "ampe_policy"
+  backend "azurerm" {
+    key = "ampe_policy"
   }
   required_version = ">= 1.3"
   required_providers {
@@ -39,6 +39,6 @@ terraform {
   }
 }
 
-provider "azurerm" {  
+provider "azurerm" {
   features {}
 }
