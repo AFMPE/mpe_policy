@@ -1,4 +1,4 @@
-name: Validate MPE changes 
+name: Validate MPE Policy changes 
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
 
   validate:
     runs-on: ubuntu-latest
-    name: Validate MPE Management terraform configuration
+    name: Validate MPE Policy terraform configuration
     steps:
       - name: Checkout
         uses: actions/checkout@v3

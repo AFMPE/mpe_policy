@@ -9,6 +9,6 @@
 
 # The policy definition id for the policy definition to be assigned to the subscription.  This policy definition id can be obtained from the Azure Policy portal.
 
-root_management_group_id ="ampe" # the root management group id for this subscription
-root_management_group_display_name ="ampe" # the root management group display name for this subscription
+root_management_group_id           = "ampe" # the root management group id for this subscription
+root_management_group_display_name = "ampe" # the root management group display name for this subscription
 
