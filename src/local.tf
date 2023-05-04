@@ -16,6 +16,10 @@ locals {
   root_name                      = var.root_management_group_display_name  
 }
 
+locals {
+  resource_discovery_mode = var.re_evaluate_compliance == true ? "ReEvaluateCompliance" : "ExistingNonCompliant"
+}
+
 # The following locals are used to ensure non-null values
 # are assigned to each of the corresponding inputs for
 # correct processing in `lookup()` functions.

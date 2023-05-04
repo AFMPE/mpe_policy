@@ -8,29 +8,9 @@ DESCRIPTION: The following components will be options in this deployment
 AUTHOR/S: jspinella
 */
 
-###################################################
-### Policy Initiative Definitions Configuations ###
-###################################################
-
-#####################################################
-# Monitoring: Resource & Activity Log Forwarders  ###
-#####################################################
-module "platform_diagnostics_initiative" {
-  depends_on = [
-    module.deploy_resource_diagnostic_setting
-  ]
-  source                  = "azurenoops/overlays-policy/azurerm//modules/policyInitiative"
-  version                 = ">= 1.2.1"
-  initiative_name         = "platform_diagnostics_initiative"
-  initiative_display_name = "[Platform]: Diagnostics Settings Policy Initiative"
-  initiative_description  = "Collection of policies that deploy resource and activity log forwarders to logging core resources"
-  initiative_category     = "Monitoring"
-  merge_effects           = false # will not merge "effect" parameters
-  management_group_id     = data.azurerm_management_group.root.id
-
-  # Populate member_definitions with a for loop (not explicit)
-  member_definitions = [for mon in module.deploy_resource_diagnostic_setting : mon.definition]
-}
+######################################################
+### PolicySet Assignment Definitions Configuations ###
+######################################################
 
 ###########################
 # Network: Private Dns  ###
@@ -40,7 +20,7 @@ module "platform_diagnostics_initiative" {
   version          = ">= 1.1.0"
   initiative       = "./policy/custom/policyset/network/deploy_private_dns_zones.json"
   assignment_scope = module.mod_management_group.management_groups["/providers/Microsoft.Management/managementGroups/${local.root_id}"].id
-  skip_remediation = false
+  skip_remediation = var.skip_remediation
 
   role_definition_ids = [
     data.azurerm_role_definition.contributor.id

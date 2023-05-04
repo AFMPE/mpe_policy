@@ -31,9 +31,38 @@ variable "root_management_group_display_name" {
   }
 }
 
+variable "subscription_id_hub" {
+  type        = string
+  description = "If specified, identifies the Platform subscription for \"Hub\" for resource deployment and correct placement in the Management Group hierarchy."
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]{36}$", var.subscription_id_hub)) || var.subscription_id_hub == ""
+    error_message = "Value must be a valid Subscription ID (GUID)."
+  }
+  sensitive = true
+}
+
 ##########################
 # Policy Configuration  ##
 ##########################
+
+variable "skip_remediation" {
+  type        = bool
+  description = "Skip creation of all remediation tasks for policies that DeployIfNotExists and Modify"
+  default     = true
+}
+
+variable "skip_role_assignment" {
+  type        = bool
+  description = "Should the module skip creation of role assignment for policies that DeployIfNotExists and Modify"
+  default     = false
+}
+
+variable "re_evaluate_compliance" {
+  type        = bool
+  description = "Should the module re-evaluate compliant resources for policies that DeployIfNotExists and Modify"
+  default     = false
+}
 
 variable "create_duration_delay" {
   type = object({

@@ -13,30 +13,23 @@ AUTHOR/S: jspinella
 ########################################
 
 ##################
-# General
+# Security Center
 ##################
 
-# Deny Azure Resource types
-module "deny_resources_types" {  
-  source              = "azurenoops/overlays-policy/azurerm//modules/policyDefinition"
-  version             = "~> 1.2"
-  policy_def_name     = "deny_resources_types"
-  display_name        = "Deny Azure Resource types"
-  policy_category     = "General"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/${local.root_id}"
-}
-
-# Allow Azure Regions
-module "allow_regions" {
-  depends_on = [
-    module.mod_management_group
-  ]
-  source              = "azurenoops/overlays-policy/azurerm//modules/policyDefinition"
-  version             = "~> 1.2"
-  policy_def_name     = "allow_regions"
-  display_name        = "Allow Azure Regions"
-  policy_category     = "General"
-  management_group_id = "/providers/Microsoft.Management/managementGroups/${local.root_id}"
+# create definitions by calling them explicitly from a local (as above)
+module "mod_configure_asc" {
+  source  = "azurenoops/overlays-policy/azurerm//modules/policyDefinition"
+  version = ">= 1.2"
+  for_each = toset([
+    "auto_enroll_subscriptions",
+    "auto_provision_log_analytics_agent_custom_workspace",
+    "auto_set_contact_details",
+    "export_asc_alerts_and_recommendations_to_eventhub",
+    "export_asc_alerts_and_recommendations_to_log_analytics",
+  ])
+  policy_def_name     = each.value
+  policy_category     = "Security"
+  management_group_id = data.azurerm_management_group.root.id
 }
 
 ##################
@@ -44,20 +37,17 @@ module "allow_regions" {
 ##################
 
 # Deploy Diagnostic Settings for Azure Resources
-module "deploy_resource_diagnostic_setting" {
-  depends_on = [
-    module.mod_management_group
-  ]
+module "mod_deploy_resource_diagnostic_setting" {
   source  = "azurenoops/overlays-policy/azurerm//modules/policyDefinition"
-  version = "~> 1.2"
+  version = ">= 1.2"
   for_each = toset([
     "audit_log_analytics_workspace_retention",
     "audit_subscription_diagnostic_setting_should_exist",
     "deploy_api_mgmt_diagnostic_setting",
     "deploy_vnet_diagnostic_setting",
     "deploy_storage_account_diagnostic_setting",
-    "deploy_keyvault_diagnostic_setting",    
-    "deploy_firewall_diagnostic_setting",    
+    "deploy_keyvault_diagnostic_setting",
+    "deploy_firewall_diagnostic_setting",
     "deploy_network_security_group_diagnostic_setting",
     "deploy_virtual_machine_diagnostic_setting",
   ])
@@ -71,9 +61,9 @@ module "deploy_resource_diagnostic_setting" {
 ##################
 
 # Deny Public IP Addresses on Network 
-module "deny_public_ip_platforms" {  
+module "mod_deny_public_ip_platforms" {
   source              = "azurenoops/overlays-policy/azurerm//modules/policyDefinition"
-  version             = ">= 1.2.1"
+  version             = ">= 1.2"
   policy_def_name     = "deny_publicip"
   display_name        = "Platforms Network should not have public IPs"
   policy_category     = "Network"
@@ -81,18 +71,18 @@ module "deny_public_ip_platforms" {
 }
 
 # Deny Public IP Addresses on Network 
-module "deny_public_ip_workloads_internal" {  
+module "mod_deny_public_ip_workloads_internal" {
   source              = "azurenoops/overlays-policy/azurerm//modules/policyDefinition"
-  version             = ">= 1.2.1"
+  version             = ">= 1.2"
   policy_def_name     = "deny_publicip"
   display_name        = "Internal Workloads Network should not have public IPs"
   policy_category     = "Network"
   management_group_id = data.azurerm_management_group.internal.id
 }
 
-module "deny_public_ip_workloads_partners" {  
+module "mod_deny_public_ip_workloads_partners" {
   source              = "azurenoops/overlays-policy/azurerm//modules/policyDefinition"
-  version             = ">= 1.2.1"
+  version             = ">= 1.2"
   policy_def_name     = "deny_publicip"
   display_name        = "Partners Workload Network should not have public IPs"
   policy_category     = "Network"
@@ -100,11 +90,35 @@ module "deny_public_ip_workloads_partners" {
 }
 
 ##################
+# Storage
+##################
+module "mod_storage_enforce_https" {
+  source              = "azurenoops/overlays-policy/azurerm//modules/policyDefinition"
+  version             = ">= 1.2"
+  policy_def_name     = "storage_enforce_https"
+  display_name        = "Secure transfer to storage accounts should be enabled"
+  policy_category     = "Storage"
+  policy_mode         = "Indexed"
+  management_group_id = data.azurerm_management_group.root.id
+}
+
+module "mod_storage_enforce_minimum_tls1_2" {
+  source              = "azurenoops/overlays-policy/azurerm//modules/policyDefinition"
+  version             = ">= 1.2"
+  policy_def_name     = "deny_storage_mintls"
+  display_name        = "Minimum TLS version for data in transit to storage accounts should be set"
+  policy_category     = "Storage"
+  policy_mode         = "Indexed"
+  management_group_id = data.azurerm_management_group.root.id
+}
+
+
+##################
 # Tags
 ##################
-module "inherit_resource_group_tags_modify" {
+module "mod_inherit_resource_group_tags_modify" {
   source              = "azurenoops/overlays-policy/azurerm//modules/policyDefinition"
-  version             = ">= 1.2.1"
+  version             = ">= 1.2"
   policy_def_name     = "inherit_resource_group_tags_modify"
   display_name        = "Resources should inherit Resource Group Tags and Values with Modify Remediation"
   policy_category     = "Tags"
@@ -115,22 +129,22 @@ module "inherit_resource_group_tags_modify" {
 resource "time_sleep" "after_azurerm_policy_definition" {
   depends_on = [
     //module.deploy_resource_diagnostic_setting,
-    module.deny_public_ip_platforms,
-    module.deny_public_ip_workloads_internal,
-    module.deny_public_ip_workloads_partners,
+    module.mod_deny_public_ip_platforms,
+    module.mod_deny_public_ip_workloads_internal,
+    module.mod_deny_public_ip_workloads_partners,
     //module.storage_enforce_https,
     //module.storage_enforce_minimum_tls1_2,
-    module.inherit_resource_group_tags_modify,
+    module.mod_inherit_resource_group_tags_modify,
   ]
 
   triggers = {
     // "azurerm_policy_definition_noops" = jsonencode(keys(module.deploy_resource_diagnostic_setting))
-    "azurerm_policy_definition_noops" = jsonencode(keys(module.deny_public_ip_platforms))
-    "azurerm_policy_definition_noops" = jsonencode(keys(module.deny_public_ip_workloads_internal))
-    "azurerm_policy_definition_noops" = jsonencode(keys(module.deny_public_ip_workloads_partners))
+    "azurerm_policy_definition_noops" = jsonencode(keys(module.mod_deny_public_ip_platforms))
+    "azurerm_policy_definition_noops" = jsonencode(keys(module.mod_deny_public_ip_workloads_internal))
+    "azurerm_policy_definition_noops" = jsonencode(keys(module.mod_deny_public_ip_workloads_partners))
     //"azurerm_policy_definition_noops" = jsonencode(keys(module.storage_enforce_https))
     //"azurerm_policy_definition_noops" = jsonencode(keys(module.storage_enforce_minimum_tls1_2))
-    "azurerm_policy_definition_noops" = jsonencode(keys(module.inherit_resource_group_tags_modify))
+    "azurerm_policy_definition_noops" = jsonencode(keys(module.mod_inherit_resource_group_tags_modify))
   }
 
   create_duration  = local.create_duration_delay["after_azurerm_policy_definition"]
