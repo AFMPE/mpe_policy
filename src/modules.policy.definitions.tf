@@ -13,13 +13,43 @@ AUTHOR/S: jspinella
 ########################################
 
 ##################
+# General
+##################
+
+# Deny Azure Resource types
+module "deny_resources_types" {  
+  source              = "azurenoops/overlays-policy/azurerm//modules/policyDefinition"
+  version             = "~> 1.2"
+  policy_def_name     = "deny_resources_types"
+  display_name        = "Deny Azure Resource types"
+  policy_category     = "General"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/${local.root_id}"
+}
+
+# Allow Azure Regions
+module "allow_regions" {
+  depends_on = [
+    module.mod_management_group
+  ]
+  source              = "azurenoops/overlays-policy/azurerm//modules/policyDefinition"
+  version             = "~> 1.2"
+  policy_def_name     = "allow_regions"
+  display_name        = "Allow Azure Regions"
+  policy_category     = "General"
+  management_group_id = "/providers/Microsoft.Management/managementGroups/${local.root_id}"
+}
+
+##################
 # Monitoring
 ##################
 
 # Deploy Diagnostic Settings for Azure Resources
 module "deploy_resource_diagnostic_setting" {
+  depends_on = [
+    module.mod_management_group
+  ]
   source  = "azurenoops/overlays-policy/azurerm//modules/policyDefinition"
-  version = ">= 1.2.1"
+  version = "~> 1.2"
   for_each = toset([
     "audit_log_analytics_workspace_retention",
     "audit_subscription_diagnostic_setting_should_exist",
