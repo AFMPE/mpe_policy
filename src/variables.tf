@@ -42,6 +42,28 @@ variable "subscription_id_hub" {
   sensitive = true
 }
 
+variable "subscription_id_gsa_dev" {
+  type        = string
+  description = "If specified, identifies the Workload subscription for \"GSA\" for resource deployment."
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]{36}$", var.subscription_id_gsa_dev)) || var.subscription_id_gsa_dev == ""
+    error_message = "Value must be a valid Subscription ID (GUID)."
+  }
+  sensitive = true
+}
+
+variable "subscription_id_gsa_prod" {
+  type        = string
+  description = "If specified, identifies the Workload subscription for \"GSA\" for resource deployment."
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]{36}$", var.subscription_id_gsa_prod)) || var.subscription_id_gsa_prod == ""
+    error_message = "Value must be a valid Subscription ID (GUID)."
+  }
+  sensitive = true
+}
+
 ##########################
 # Policy Configuration  ##
 ##########################

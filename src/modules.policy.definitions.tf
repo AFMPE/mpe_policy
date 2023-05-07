@@ -16,7 +16,7 @@ AUTHOR/S: jspinella
 # Security Center
 ##################
 
-# create definitions by calling them explicitly from a local (as above)
+# 
 module "mod_configure_asc" {
   source  = "azurenoops/overlays-policy/azurerm//modules/policyDefinition"
   version = ">= 1.2"
@@ -45,11 +45,16 @@ module "mod_deploy_resource_diagnostic_setting" {
     "audit_subscription_diagnostic_setting_should_exist",
     "deploy_api_mgmt_diagnostic_setting",
     "deploy_vnet_diagnostic_setting",
+    "deploy_public_ip_diagnostic_setting",
+    "deploy_network_interface_diagnostic_setting",
     "deploy_storage_account_diagnostic_setting",
     "deploy_keyvault_diagnostic_setting",
     "deploy_firewall_diagnostic_setting",
     "deploy_network_security_group_diagnostic_setting",
     "deploy_virtual_machine_diagnostic_setting",
+    "deploy_subscription_diagnostic_setting",
+    "deploy_bastion_diagnostic_setting",
+    "deploy_application_gateway_diagnostic_setting",
   ])
   policy_def_name     = each.value
   policy_category     = "Monitoring"

@@ -11,3 +11,10 @@
 
 root_management_group_id           = "ampe-test" # the root management group id for this subscription
 root_management_group_display_name = "ampe-test" # the root management group display name for this subscription
+
+skip_remediation       = false # set to true to skip remediation of existing resources
+skip_role_assignment   = false # set to true to skip role assignment
+re_evaluate_compliance = false # set to true to re-evaluate compliance
+
+policy_non_compliance_message_enabled         = true # set to true to enable the policy non-compliance message
+policy_non_compliance_message_default_enabled = true # set to true to enable the policy non-compliance message by default

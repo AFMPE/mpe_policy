@@ -27,6 +27,8 @@ jobs:
           path: src
           variables: |
             subscription_id_hub = "${{ env.ARM_SUBSCRIPTION_ID }}"
+            subscription_id_dev = "${{ secrets.subscription_id_gsa_dev }}"
+            subscription_id_prod = "${{ secrets.subscription_id_gsa_prod }}"
           var_file: |
             src/tfvars/production/parameters.prod.tfvars
           backend_config: |

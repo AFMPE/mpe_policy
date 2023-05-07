@@ -49,3 +49,8 @@ data "azurerm_log_analytics_workspace" "ampe_laws" {
   name                = "ampe-eus-ops-logging-core-prod-log"
   resource_group_name = "ampe-eus-ops-logging-core-prod-rg"
 }
+
+data "azurerm_storage_account" "logging_storage_account" {
+  name                = "ampeeus264794eccaafa2f0"
+  resource_group_name = "ampe-eus-ops-logging-core-prod-rg"
+}
